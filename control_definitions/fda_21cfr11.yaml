@@ -1,0 +1,79 @@
+framework:
+  name: "FDA 21 CFR Part 11"
+  version: "2024"
+  description: "Electronic Records; Electronic Signatures"
+
+controls:
+  - id: "11.10(a)"
+    title: "Validation"
+    description: |
+      Validation of systems to ensure accuracy, reliability, consistent 
+      intended performance, and the ability to discern invalid or altered records.
+    evidence_types:
+      - "SYSTEM_VALIDATION"
+      - "TEST_EXECUTION"
+      - "CHANGE_CONTROL"
+    event_mappings:
+      - event_pattern: "POLICY_VALIDATION_*"
+        evidence_type: "SYSTEM_VALIDATION"
+      - event_pattern: "TEST_VECTOR_*"
+        evidence_type: "TEST_EXECUTION"
+
+  - id: "11.10(b)"
+    title: "Readable Copies"
+    description: |
+      The ability to generate accurate and complete copies of records in both 
+      human readable and electronic form suitable for inspection.
+    evidence_types:
+      - "AUDIT_LOG_EXPORT"
+      - "REPORT_GENERATION"
+    event_mappings:
+      - event_pattern: "REPORT_GENERATED"
+        evidence_type: "REPORT_GENERATION"
+      - event_pattern: "AUDIT_EXPORT"
+        evidence_type: "AUDIT_LOG_EXPORT"
+
+  - id: "11.10(d)"
+    title: "Limiting System Access"
+    description: |
+      Limiting system access to authorized individuals.
+    evidence_types:
+      - "ACCESS_CONTROL"
+      - "AUTHORIZATION_CHECK"
+      - "ACCESS_DENIED"
+    event_mappings:
+      - event_pattern: "POLICY_DECISION"
+        evidence_type: "ACCESS_CONTROL"
+      - event_pattern: "OUTPUT_RAIL_CANARY_PHI_DETECTED"
+        evidence_type: "ACCESS_DENIED"
+      - event_pattern: "INPUT_RAIL_INJECTION_BLOCKED"
+        evidence_type: "ACCESS_DENIED"
+
+  - id: "11.10(e)"
+    title: "Audit Trails"
+    description: |
+      Use of secure, computer-generated, time-stamped audit trails to 
+      independently record the date and time of operator entries.
+    evidence_types:
+      - "AUDIT_LOG_ENTRY"
+      - "TIMESTAMP_VERIFICATION"
+    event_mappings:
+      - event_pattern: "*"
+        evidence_type: "AUDIT_LOG_ENTRY"
+
+  - id: "11.10(g)"
+    title: "Authority Checks"
+    description: |
+      Use of authority checks to ensure that only authorized individuals 
+      can use the system.
+    evidence_types:
+      - "ROLE_CHECK"
+      - "POLICY_EVALUATION"
+    event_mappings:
+      - event_pattern: "POLICY_DECISION"
+        condition: "decision == 'ALLOW'"
+        evidence_type: "ROLE_CHECK"
+      - event_pattern: "POLICY_DECISION"
+        condition: "decision == 'BLOCK'"
+        evidence_type: "ROLE_CHECK"
+
