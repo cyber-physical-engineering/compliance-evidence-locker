@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "compliance-evidence-locker"
 version = "0.1.0"
-description = "Automated generation of immutable audit evidence from Trust Stack logs."
+description = "Keeps audit events in a SHA-256 hash chain and tags them with 21 CFR Part 11 §11.10 controls for an auditor's review."
 readme = "README.md"
 license = {text = "Apache-2.0"}
 authors = [
-    {name = "Big Data Plumbing", email = "contact@bigdataplumbing.io"}
+    {name = "James Thornton"}
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Healthcare Industry",
     "License :: OSI Approved :: Apache Software License",
@@ -22,17 +22,11 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Security :: Cryptography",
-    "Topic :: Office/Business :: Financial :: Accounting",
 ]
 requires-python = ">=3.9"
 dependencies = [
     "pyyaml>=6.0",
-    "pydantic>=2.0",
-    "fastapi>=0.109.0",
-    "uvicorn[standard]>=0.27.0",
     "typer>=0.9.0",
-    "reportlab>=4.0",
-    "openpyxl>=3.1",
 ]
 
 [project.optional-dependencies]
@@ -47,10 +41,10 @@ dev = [
 evidence-locker = "evidence_locker.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/bigdataplumbing/compliance-evidence-locker"
-Documentation = "https://github.com/bigdataplumbing/compliance-evidence-locker#readme"
-Repository = "https://github.com/bigdataplumbing/compliance-evidence-locker"
-Issues = "https://github.com/bigdataplumbing/compliance-evidence-locker/issues"
+Homepage = "https://github.com/cyber-physical-engineering/compliance-evidence-locker"
+Documentation = "https://github.com/cyber-physical-engineering/compliance-evidence-locker#readme"
+Repository = "https://github.com/cyber-physical-engineering/compliance-evidence-locker"
+Issues = "https://github.com/cyber-physical-engineering/compliance-evidence-locker/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["evidence_locker"]

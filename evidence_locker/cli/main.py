@@ -1,6 +1,7 @@
 """Compliance Evidence Locker CLI.
 
-Commands for managing immutable audit evidence and generating compliance reports.
+Commands to keep audit events in a hash chain, tag them with controls, verify
+the chain and export it.
 """
 
 from __future__ import annotations
@@ -13,11 +14,20 @@ from typing import Any, Optional
 import typer
 
 from ..core.control_mapper import ControlMapper
-from ..core.hash_chain import EvidenceChain
+from ..core.hash_chain import ChainIntegrityError, EvidenceChain
+
+def _open_chain(storage_path: Path) -> EvidenceChain:
+    """Load a chain, or stop with a clear message if it fails verification."""
+    try:
+        return EvidenceChain(storage_path)
+    except ChainIntegrityError as error:
+        typer.echo(f"✗ Chain integrity FAILED at block {error.index}", err=True)
+        raise typer.Exit(1) from error
+
 
 app = typer.Typer(
     add_completion=False,
-    help="Compliance Evidence Locker - Immutable audit evidence for FDA/HIPAA compliance",
+    help="Keeps audit events in a SHA-256 hash chain and tags them with 21 CFR Part 11 §11.10 controls",
 )
 
 
@@ -28,7 +38,7 @@ def init(
     ),
 ) -> None:
     """Initialize a new evidence chain at the specified location."""
-    chain = EvidenceChain(storage_path)
+    chain = _open_chain(storage_path)
     typer.echo(f"✓ Evidence chain initialized at {storage_path}")
     typer.echo(f"  Genesis block hash: {chain.get_chain_hash()[:16]}...")
 
@@ -59,7 +69,7 @@ def ingest(
         raise typer.BadParameter(f"Invalid JSON: {e}") from e
 
     # Load chain
-    chain = EvidenceChain(storage_path)
+    chain = _open_chain(storage_path)
 
     # Map to controls if definitions provided
     control_mappings: list[dict[str, Any]] = []
@@ -98,7 +108,7 @@ def verify(
     ),
 ) -> None:
     """Verify the integrity of an evidence chain."""
-    chain = EvidenceChain(storage_path)
+    chain = EvidenceChain(storage_path, verify_on_load=False)
     is_valid, invalid_at = chain.verify_integrity()
 
     if is_valid:
@@ -116,7 +126,7 @@ def status(
     ),
 ) -> None:
     """Show status of an evidence chain."""
-    chain = EvidenceChain(storage_path)
+    chain = _open_chain(storage_path)
 
     typer.echo(f"Evidence Chain: {storage_path}")
     typer.echo(f"  Total blocks: {len(chain.chain)}")
@@ -157,7 +167,7 @@ def export(
     ),
 ) -> None:
     """Export the evidence chain to a file."""
-    chain = EvidenceChain(storage_path)
+    chain = _open_chain(storage_path)
 
     if format_type == "jsonl":
         with open(output, "w") as f:

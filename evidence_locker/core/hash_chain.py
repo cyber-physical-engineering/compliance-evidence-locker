@@ -1,6 +1,8 @@
-"""Immutable hash chain for compliance evidence.
+"""SHA-256 hash chain for audit events.
 
-Implements a blockchain-style append-only log for FDA/HIPAA audit trails.
+An append-only JSON Lines log. Each block carries the hash of the block before
+it, so an edited block or a broken link fails verification. There is no
+signature and no outside anchor, so a full rewrite is not caught.
 """
 
 from __future__ import annotations
@@ -55,15 +57,27 @@ class EvidenceBlock:
         }
 
 
+class ChainIntegrityError(ValueError):
+    """Raised when a stored chain fails verification on load."""
+
+    def __init__(self, index: int) -> None:
+        super().__init__(f"Chain integrity error at block {index}")
+        self.index = index
+
+
 class EvidenceChain:
-    """Append-only chain of compliance evidence."""
+    """Append-only chain of audit events, one block per event."""
 
     GENESIS_HASH = "0" * 64
 
-    def __init__(self, storage_path: Path) -> None:
+    def __init__(self, storage_path: Path, verify_on_load: bool = True) -> None:
         self.storage_path = Path(storage_path)
         self.chain: list[EvidenceBlock] = []
         self._load_or_initialize()
+        if verify_on_load:
+            is_valid, invalid_at = self.verify_integrity()
+            if not is_valid:
+                raise ChainIntegrityError(invalid_at if invalid_at is not None else 0)
 
     def _load_or_initialize(self) -> None:
         """Load existing chain or create genesis block."""
@@ -81,9 +95,9 @@ class EvidenceChain:
                         control_mappings=block_data["control_mappings"],
                         previous_hash=block_data["previous_hash"],
                     )
-                    # Verify hash matches
-                    if block.hash != block_data["hash"]:
-                        raise ValueError(f"Chain integrity error at block {block.index}")
+                    # Keep the stored hash; verify_integrity() compares it
+                    # with a fresh hash of the block's contents.
+                    block.hash = block_data["hash"]
                     self.chain.append(block)
         else:
             # Create genesis block

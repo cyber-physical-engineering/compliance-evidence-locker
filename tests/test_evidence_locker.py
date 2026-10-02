@@ -123,3 +123,31 @@ def test_chain_persistence():
         assert chain2.get_chain_hash() == original_hash
         assert chain2.chain[1].event_type == "PERSISTENT_TEST"
 
+
+
+def test_edited_block_is_reported_not_crashed(tmp_path):
+    import json
+
+    from evidence_locker.core.hash_chain import ChainIntegrityError, EvidenceChain
+
+    chain = EvidenceChain(tmp_path)
+    chain.add_evidence("POLICY_DECISION", {"decision": "ALLOW"}, [])
+
+    chain_file = tmp_path / "chain.jsonl"
+    lines = chain_file.read_text().splitlines()
+    block = json.loads(lines[1])
+    block["event_data"]["decision"] = "DENY"
+    lines[1] = json.dumps(block)
+    chain_file.write_text("\n".join(lines) + "\n")
+
+    # A normal load refuses the edited chain.
+    try:
+        EvidenceChain(tmp_path)
+    except ChainIntegrityError as error:
+        assert error.index == 1
+    else:
+        raise AssertionError("an edited chain loaded without error")
+
+    # The verify path loads it anyway and names the first bad block.
+    is_valid, invalid_at = EvidenceChain(tmp_path, verify_on_load=False).verify_integrity()
+    assert (is_valid, invalid_at) == (False, 1)
