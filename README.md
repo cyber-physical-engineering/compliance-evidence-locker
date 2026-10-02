@@ -37,7 +37,7 @@ evidence-locker export ./evidence_data --output audit_export.json
 What the run prints. Hash prefixes and timestamps differ per run.
 
 ```
-✓ Evidence chain initialized at ./evidence_data
+✓ Evidence chain initialized at evidence_data
   Genesis block hash: ...
 ✓ Evidence block #1 added
   Hash: ...
@@ -47,7 +47,7 @@ What the run prints. Hash prefixes and timestamps differ per run.
     - 11.10(g): Authority Checks
 ✓ Chain integrity verified (2 blocks)
   Chain tip: ...
-Evidence Chain: ./evidence_data
+Evidence Chain: evidence_data
   Total blocks: 2
   Chain tip:    ...
   First block:  ...
