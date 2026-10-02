@@ -4,6 +4,8 @@ A command-line tool that keeps audit events in a hash-chained JSON Lines file. E
 
 **Status: prototype.** 8 tests pass on Python 3.9 (October 2026). The walkthrough below was run as written.
 
+[![CI](https://github.com/cyber-physical-engineering/compliance-evidence-locker/actions/workflows/ci.yml/badge.svg)](https://github.com/cyber-physical-engineering/compliance-evidence-locker/actions/workflows/ci.yml)
+
 James Thornton set the architecture and requirements. The code was written with AI-assisted development in late 2025. The tests and checks were re-run in October 2026.
 
 ## What it does
