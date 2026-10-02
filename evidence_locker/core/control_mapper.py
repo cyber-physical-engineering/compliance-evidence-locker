@@ -1,7 +1,8 @@
-"""ControlMapper: Maps audit events to compliance control definitions.
+"""ControlMapper: matches event types to control definitions.
 
-This module links Trust Stack events to FDA 21 CFR Part 11 (and other framework)
-controls, enabling automated evidence collection and audit report generation.
+The definitions are YAML files; the shipped one covers five controls from
+21 CFR Part 11 §11.10. A match is a tag for an auditor's review, not a
+compliance determination.
 """
 
 from __future__ import annotations
@@ -178,7 +179,7 @@ class ControlMapper:
             except (ValueError, TypeError):
                 return False
 
-        # If we can't parse the condition, default to True (permissive)
+        # A condition this parser cannot read counts as a match. The README names this limit.
         return True
 
     def get_framework(self, name: str) -> Optional[FrameworkDefinition]:

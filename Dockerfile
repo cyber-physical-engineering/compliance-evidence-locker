@@ -1,11 +1,10 @@
-# Compliance Evidence Locker - Docker Image
-# Automated generation of immutable audit evidence for FDA/HIPAA compliance
+# Compliance Evidence Locker: Docker image
+# A CLI that keeps audit events in a SHA-256 hash chain and tags them with 21 CFR Part 11 controls
 
 FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="compliance-evidence-locker"
-LABEL org.opencontainers.image.description="Immutable audit evidence chain for FDA 21 CFR Part 11 compliance"
-LABEL org.opencontainers.image.vendor="Big Data Plumbing"
+LABEL org.opencontainers.image.description="Audit events in a SHA-256 hash chain, tagged with 21 CFR Part 11 §11.10 controls (prototype)"
 
 WORKDIR /app
 
@@ -21,10 +20,6 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Create data directory
 RUN mkdir -p /data
 
-ENV PORT=8080
-EXPOSE 8080
-
-# Default: run the CLI (can be overridden to run API)
 ENTRYPOINT ["evidence-locker"]
 CMD ["--help"]
 

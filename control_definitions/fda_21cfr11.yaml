@@ -1,6 +1,6 @@
 framework:
   name: "FDA 21 CFR Part 11"
-  version: "2024"
+  version: "eCFR text, read 2026-09-01"
   description: "Electronic Records; Electronic Signatures"
 
 controls:
